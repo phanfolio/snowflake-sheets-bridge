@@ -1,5 +1,7 @@
 # Snowsheets
 
+[![Docs](https://img.shields.io/badge/docs-phanfolio.github.io-blue?logo=materialformkdocs&logoColor=white)](https://phanfolio.github.io/snowflake-sheets-bridge/)
+
 **A Snowflake → Google Sheets bridge.** Scheduled, all-or-nothing publishing of
 Snowflake query results to Google Sheets, so Tableau Public dashboards can plug into Snowflake indirectly and stay refreshed, for $0.
 

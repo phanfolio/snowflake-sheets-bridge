@@ -25,6 +25,9 @@ jobs:
       id-token: write                         # lets the job request a keyless Google token
     env:
       PROJECT_DIR: projects/${{ inputs.project }}
+      # The Snowflake connector's compiled core probes for an AWS instance at login and logs
+      # warnings when it isn't on one. This runner isn't on AWS, so skip the probe.
+      AWS_EC2_METADATA_DISABLED: "true"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
