@@ -49,15 +49,41 @@ Callers grant `contents: read` and `id-token: write`, and `_sync.yml` asks for t
 |---|---|
 | `schedule` | Daily, in **UTC**. Give each project a different minute; GitHub delays jobs most at the top of the hour. |
 | `workflow_dispatch` | The **Run workflow** button in Actions |
-| `push` to `main` | When this project's folder, the shared code (`snowsheets/`, `defaults.yml`, `pyproject.toml`, `uv.lock`, `.python-version`, `_sync.yml`) or the caller itself changes |
+| `push` to `main` | When this project's folder, the shared code (`snowsheets/`, `defaults.yml`, `pyproject.toml`, `uv.lock`, `.python-version`, `_sync.yml`) or the caller itself changes. With `main` protected, that push is the merge of a pull request |
 
-Because shared-code paths are in every caller, **a change to `snowsheets/` re-publishes every project**. That's intentional: you see immediately if the change broke anything. Remove those paths from a caller if you'd rather a project only refresh on its own schedule.
+Because shared-code paths are in every caller, **merging a change to `snowsheets/` re-publishes every project**. That's intentional: you see immediately if the change broke anything. Remove those paths from a caller if you'd rather a project only refresh on its own schedule.
 
 ## Tests workflow
 
 `tests.yml` runs `uv run pytest` on every pull request and every push to `main`. It needs no environment or secrets, so pull requests from forks run it safely.
 
-It's independent of the sync workflows: a failing test never blocks a scheduled refresh. To stop untested code from reaching `main`, and therefore every project, enable **branch protection** for `main` (Settings → Branches) and require the **pytest** status check.
+It's independent of the sync workflows: a failing test never blocks a scheduled refresh.
+
+## Branch protection on main
+
+`main` is protected so that untested code can't reach it, and therefore can't reach every project's Sheet:
+
+| Rule | Setting |
+|---|---|
+| Changes arrive by pull request | required, with 0 approvals (a solo maintainer can merge their own) |
+| Required check | **pytest**, from the Tests workflow |
+| Branch must be up to date with `main` before merging | yes |
+| Applies to admins | yes: nobody pushes to `main` directly |
+| Force pushes and branch deletion | blocked |
+
+Only `pytest` is required. The Docs build runs only when docs change, and a required check that never runs would block every other pull request. Docs pull requests still show the Docs build, and a broken build is visible on the pull request.
+
+Day to day:
+
+```bash
+git switch -c my-change
+# edit, commit
+git push -u origin my-change
+gh pr create --fill          # Tests runs on the pull request
+gh pr merge --squash         # allowed once pytest passes; the merge triggers the sync callers
+```
+
+Dependabot's pull requests follow the same rule: they merge once `pytest` passes on them. To change the rules, go to Settings → Branches → `main`.
 
 ## Docs workflow
 
