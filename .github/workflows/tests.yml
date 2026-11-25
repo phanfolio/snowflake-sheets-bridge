@@ -1,0 +1,29 @@
+# Runs the test suite on every pull request and every push to main.
+# Needs no secrets and no environment: Snowflake and Google are faked in tests/.
+# To block merges on failures, require the "pytest" check in branch protection for main.
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          enable-cache: true
+
+      - name: Install (with dev dependencies)
+        run: uv sync --locked
+
+      - name: Run tests
+        run: uv run pytest

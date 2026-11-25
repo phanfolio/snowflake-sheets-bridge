@@ -1,0 +1,15 @@
+# Working example against Snowflake's built-in sample data (SNOWFLAKE_SAMPLE_DATA.TPCH_SF1),
+# which trial accounts include. Read-only: the role needs IMPORTED PRIVILEGES on that shared
+# database (docs/getting-started/setup.md).
+# Validate:  uv run snowsheets check projects/tpch_sample
+
+datasets:
+  # ~12k rows: DATE, VARCHAR, BOOLEAN, integer counts and decimals
+  - name: daily_orders
+    sql: queries/daily_orders.sql
+    columns: [ORDER_DATE, ORDER_PRIORITY, IS_URGENT, ORDERS, REVENUE, AVG_ORDER_VALUE]
+
+  # 125 rows: a 4-table join, DATEs, and a time-zoned TIMESTAMP that should land as UTC
+  - name: revenue_by_region
+    sql: queries/revenue_by_region.sql
+    columns: [REGION, NATION, MARKET_SEGMENT, CUSTOMERS, REVENUE, FIRST_ORDER_DATE, LAST_ORDER_DATE, COMPUTED_AT]

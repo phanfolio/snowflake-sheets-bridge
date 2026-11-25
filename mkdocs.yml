@@ -1,0 +1,75 @@
+# Docs site: built by .github/workflows/docs.yml and served on GitHub Pages.
+# Local preview:  uv run --only-group docs mkdocs serve
+site_name: Snowsheets
+site_description: A Snowflake → Google Sheets bridge with scheduled, all-or-nothing publishing.
+site_url: https://phanfolio.github.io/snowflake-sheets-bridge/
+repo_url: https://github.com/phanfolio/snowflake-sheets-bridge
+repo_name: snowflake-sheets-bridge
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: light blue
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: light blue
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+
+# With --strict, any of these warnings fails the build.
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Quick start: getting-started/quick-start.md
+      - Setup: getting-started/setup.md
+  - Guides:
+      - Adding a project: guides/adding-a-project.md
+      - Running locally: guides/running-locally.md
+      - Troubleshooting: guides/troubleshooting.md
+  - Concepts:
+      - Architecture: concepts/architecture.md
+      - Type mapping: concepts/type-mapping.md
+  - Reference:
+      - Configuration: reference/configuration.md
+      - CLI: reference/cli.md
+      - Workflows: reference/workflows.md
+  - Development:
+      - Testing: development/testing.md

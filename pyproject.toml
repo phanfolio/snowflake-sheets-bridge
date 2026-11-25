@@ -1,0 +1,29 @@
+[project]
+name = "snowsheets"
+version = "0.1.0"
+description = "A Snowflake → Google Sheets bridge: scheduled, all-or-nothing publishing of query results to Google Sheets."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "snowflake-connector-python>=3.12",
+    "cryptography>=42",
+    "google-auth>=2.29",
+    "requests>=2.31",
+    "PyYAML>=6.0",
+]
+
+[project.scripts]
+snowsheets = "snowsheets.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]          # installed by `uv sync`; skipped in production with `--no-dev`
+docs = ["mkdocs-material>=9.5"]   # only for building the docs site: `uv run --only-group docs mkdocs serve`
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["live: talks to a real Google Sheet; opt-in, skipped unless credentials are set (tests/live/)"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

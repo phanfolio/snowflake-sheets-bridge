@@ -1,0 +1,15 @@
+# Repo-wide defaults, shared by every project.
+# Precedence (later wins): built-in < this file < project .yml < individual dataset.
+# Full reference: docs/configuration.md
+
+# Tab that records each successful publish: one row per dataset with its row count,
+# refresh time (UTC) and code version. Use it for a "Data as of" label in a dashboard.
+refresh_log_tab: _refresh_log
+
+# What to do when a query returns 0 rows: "fail" stops the project's run and keeps
+# yesterday's data; "allow" publishes the empty table (header row only).
+on_empty: fail
+
+# Upper bound on rows per dataset. Guards against an accidentally un-aggregated query
+# blowing through Google Sheets' 10M-cell limit.
+max_rows: 100000

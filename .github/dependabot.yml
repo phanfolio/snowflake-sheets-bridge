@@ -1,0 +1,11 @@
+# Keeps the SHA-pinned actions in .github/workflows current. Dependabot opens a pull request
+# that updates both the commit SHA and its "# vX.Y.Z" comment; the Tests workflow then runs on it.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:          # one PR for all action updates instead of one per action
+        patterns: ["*"]

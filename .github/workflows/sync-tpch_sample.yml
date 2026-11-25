@@ -1,0 +1,30 @@
+# Caller for the "tpch_sample" project. To add a project, copy this file to
+# sync-<project>.yml and replace every "tpch_sample" below. See docs/guides/adding-a-project.md.
+name: "Sync: tpch_sample"
+
+on:
+  schedule:
+    - cron: "23 8 * * *"         # daily, UTC. Stagger projects by a few minutes.
+  workflow_dispatch:              # "Run workflow" button in the Actions tab
+  push:
+    branches: [main]
+    paths:                        # re-publish as soon as this project's config or the shared code changes
+      - "projects/tpch_sample/**"
+      - "snowsheets/**"
+      - "defaults.yml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".python-version"
+      - ".github/workflows/_sync.yml"
+      - ".github/workflows/sync-tpch_sample.yml"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  sync:
+    uses: ./.github/workflows/_sync.yml
+    with:
+      project: tpch_sample        # = folder projects/tpch_sample = GitHub Environment "tpch_sample"
+    secrets: inherit
