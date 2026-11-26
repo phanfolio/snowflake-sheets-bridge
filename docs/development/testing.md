@@ -58,8 +58,8 @@ uv run pytest -m live -v
 ## Not covered
 
 - Real Snowflake is **verified manually, not automated**: `projects/tpch_sample` runs against Snowflake's built-in sample data (see [Running locally](../guides/running-locally.md)), and its published tabs were read back from Google and matched row for row.
-- GitHub Actions keyless auth.
-- How Tableau or Power BI themselves infer types from the cells.
+- GitHub Actions keyless auth is verified by the sync workflow's own runs, not by an automated test.
+- How Tableau infers types from the cells was **verified manually** in Tableau Public ([Type mapping](../concepts/type-mapping.md#dates-and-times)). Power BI hasn't been checked.
 - The workflow YAML.
 
 ## Writing tests

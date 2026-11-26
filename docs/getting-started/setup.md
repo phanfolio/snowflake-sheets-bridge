@@ -129,9 +129,10 @@ See [Adding a project](../guides/adding-a-project.md) and the [Configuration ref
 ## Tableau Public (once per project)
 
 1. Wait for the first successful run, so the tabs and columns exist.
-2. In Tableau Public Desktop, choose Connect → **Google Sheets**, sign in as the Sheet's owner, and pick the tabs.
-3. If a date field shows as String, change its type once. See [Type mapping](../concepts/type-mapping.md).
-4. Publish with **Keep my data in sync with Google Sheets** ticked.
+2. In Tableau Public Desktop, under *Installed Connectors* choose **Google Drive**. Tableau Public has no connector named "Google Sheets": the Drive connector is the one that opens Sheets files, and it lists the connection as **Microsoft Excel (Google Drive)** because it reads an Excel export of the Sheet ([details](../concepts/type-mapping.md#how-tableau-reads-the-sheet)).
+3. Sign in as the Sheet's owner, or an account the Sheet is shared with. On Google's consent page, **tick every permission box**. Tableau opens your system default browser for this step; if sign-in fails, see [Troubleshooting → Tableau Public sign-in](../guides/troubleshooting.md#tableau-public-sign-in).
+4. Pick the spreadsheet and drag the tabs you want onto the canvas. Check the type icon above each column: dates, booleans and date-times should arrive typed ([Type mapping](../concepts/type-mapping.md)). If one shows as String, change its type once.
+5. Publish with the sync option ticked (**Keep my data in sync…**; the exact wording varies by Tableau version). That's what makes Tableau Public refresh from the Sheet on its own.
 
 ## Enforce SHA pinning (once per repo)
 

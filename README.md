@@ -75,7 +75,7 @@ Using a project called `marketing` as the example:
 5. **Environment.** In GitHub → Settings → Environments, create `marketing` and limit it to the `main` branch. Add these secrets:
    `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PRIVATE_KEY`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_ROLE`, `GOOGLE_SHEET_ID`.
 6. **First run.** Push, then in Actions → *Sync: marketing* → **Run workflow**. Check the Sheet.
-7. **Tableau Public.** Connect Tableau Public Desktop to the Sheet and publish with **Keep my data in sync with Google Sheets** ticked.
+7. **Tableau Public.** Connect Tableau Public Desktop to the Sheet with the **Google Drive** connector, and publish with **Keep my data in sync…** ticked ([details](docs/getting-started/setup.md#tableau-public-once-per-project)).
 
 The folder name, the environment name and the `project:` value in the caller must all be the same.
 
