@@ -1,11 +1,36 @@
-# Second example project: its own Snowflake query, its own Google Sheet and its own GitHub
-# Environment. Exists to show that projects are isolated: if this one breaks (expired trial,
-# revoked key), tpch_sample keeps running. Same sample data as tpch_sample
-# (SNOWFLAKE_SAMPLE_DATA.TPCH_SF1), so it needs no extra Snowflake grants.
-# Validate:  uv run snowsheets check projects/tpch_customers
+# Second example project: seven related TPC-H tables with real primary and foreign keys, for
+# practising Tableau's data model (relationships and joins). It has its own Snowflake query set,
+# its own Google Sheet and its own GitHub Environment, so it also shows project isolation.
+# Source: SNOWFLAKE_SAMPLE_DATA.TPCH_SF1. Validate:  uv run snowsheets check projects/tpch_customers
+#
+#   region 1──* nation 1──* customer 1──* orders 1──* lineitem *──1 part
+#                 1                                       *
+#                 └──* supplier 1─────────────────────────┘ (lineitem.SUPPKEY)
+#
+# Key columns carry the same name in every table that holds them (CUSTKEY, ORDERKEY, ...), so
+# Tableau suggests the relationships on its own. Customers are a deterministic sample (every
+# 200th), and orders, line items, parts and suppliers are restricted to what that sample
+# references, so every foreign key resolves.
 
 datasets:
-  # 125 rows: integer counts and decimal balances
-  - name: customers_by_nation
-    sql: queries/customers_by_nation.sql
-    columns: [NATION, MARKET_SEGMENT, CUSTOMERS, TOTAL_BALANCE, AVG_BALANCE]
+  - name: region
+    sql: queries/region.sql
+    columns: [REGIONKEY, REGION_NAME]
+  - name: nation
+    sql: queries/nation.sql
+    columns: [NATIONKEY, NATION_NAME, REGIONKEY]
+  - name: customer
+    sql: queries/customer.sql
+    columns: [CUSTKEY, CUSTOMER_NAME, NATIONKEY, MARKET_SEGMENT, CUSTOMER_BALANCE]
+  - name: orders
+    sql: queries/orders.sql
+    columns: [ORDERKEY, CUSTKEY, ORDER_DATE, ORDER_STATUS, ORDER_PRIORITY, TOTAL_PRICE]
+  - name: lineitem
+    sql: queries/lineitem.sql
+    columns: [ORDERKEY, LINENUMBER, PARTKEY, SUPPKEY, QUANTITY, EXTENDED_PRICE, DISCOUNT, SHIP_DATE, RETURN_FLAG]
+  - name: part
+    sql: queries/part.sql
+    columns: [PARTKEY, PART_NAME, BRAND, PART_TYPE, PART_SIZE, RETAIL_PRICE]
+  - name: supplier
+    sql: queries/supplier.sql
+    columns: [SUPPKEY, SUPPLIER_NAME, NATIONKEY, SUPPLIER_BALANCE]
