@@ -129,10 +129,15 @@ See [Adding a project](../guides/adding-a-project.md) and the [Configuration ref
 ## Tableau Public (once per project)
 
 1. Wait for the first successful run, so the tabs and columns exist.
-2. In Tableau Public Desktop, under *Installed Connectors* choose **Google Drive**. Tableau Public has no connector named "Google Sheets": the Drive connector is the one that opens Sheets files, and it lists the connection as **Microsoft Excel (Google Drive)** because it reads an Excel export of the Sheet ([details](../concepts/type-mapping.md#how-tableau-reads-the-sheet)).
-3. Sign in as the Sheet's owner, or an account the Sheet is shared with. On Google's consent page, **tick every permission box**. Tableau opens your system default browser for this step; if sign-in fails, see [Troubleshooting → Tableau Public sign-in](../guides/troubleshooting.md#tableau-public-sign-in).
-4. Pick the spreadsheet and drag the tabs you want onto the canvas. Check the type icon above each column: dates, booleans and date-times should arrive typed ([Type mapping](../concepts/type-mapping.md)). If one shows as String, change its type once.
-5. Publish with the sync option ticked (**Keep my data in sync…**; the exact wording varies by Tableau version). That's what makes Tableau Public refresh from the Sheet on its own.
+2. **Save Google credentials on the Tableau Public website first.** Without them the sync checkbox is greyed out, with "Not all data sources … have saved credentials". Add a **Google Drive** credential in your Tableau Public settings on the website, signing in as the Sheet's owner.
+3. In Tableau Public Desktop, under *Installed Connectors* choose **Google Drive**. Tableau Public has no connector named "Google Sheets": the Drive connector is the one that opens Sheets files, and it lists the connection as **Microsoft Excel (Google Drive)** because it reads an Excel export of the Sheet ([details](../concepts/type-mapping.md#how-tableau-reads-the-sheet)).
+4. Sign in as the Sheet's owner, or an account the Sheet is shared with. On Google's consent page, **tick every permission box**. Tableau opens your system default browser for this step; if sign-in fails, see [Troubleshooting → Tableau Public sign-in](../guides/troubleshooting.md#tableau-public-sign-in).
+5. Connect **each tab as its own data source** (Data → New Data Source → Google Drive → drag in one table). Putting several tabs in one data source failed in testing with "Row count mismatch in HyperBinaryDataInserter … Unable to create extract" ([Troubleshooting](../guides/troubleshooting.md#tableau-public-publishing)). Check the type icon above each column ([Type mapping](../concepts/type-mapping.md)); if one shows as String, change its type once.
+6. Publish with **File → Save to Tableau Public As…** and tick **Keep my data in sync with the data source using saved credentials**. That option is only offered under *Save As…*. To add sync to a workbook you already published, save it again with *Save As…*.
+7. On the viz's page, the Details section should show **Data refreshed** and a **Request Data Refresh** button. For a visible freshness check, add a text sheet with a run timestamp such as `MAX(Computed At)`, labelled "Data as of".
+
+!!! note "What strangers can download"
+    Anyone can download the data behind a Tableau Public viz. In testing, the data download from a sheet contained **only the fields that view uses** (one column), not the whole table. Check **Download → Data** on your published viz before putting anything sensitive in a workbook.
 
 ## Enforce SHA pinning (once per repo)
 

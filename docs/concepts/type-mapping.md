@@ -13,11 +13,11 @@ Every row of this table is a test case in `tests/test_bi_contract.py` ([Testing]
 | `VARCHAR` empty string `''` | `str` | **empty cell**, the same as NULL | null |
 | `BOOLEAN` | `bool` | boolean | Boolean |
 | `DATE` | `date` | serial number + `yyyy-mm-dd` format | Date |
-| `TIMESTAMP_NTZ` | `datetime` | serial number + `yyyy-mm-dd hh:mm:ss` | Date & Time |
+| `TIMESTAMP_NTZ` | `datetime` | serial number + `yyyy-mm-dd hh:mm:ss`, **whole seconds** | Date & Time |
 | `TIMESTAMP_LTZ` / `_TZ` | aware `datetime` | **converted to UTC**, then as above | Date & Time (UTC) |
-| `TIME` | `time` | day fraction + `hh:mm:ss` | Time-formatted number |
+| `TIME` | `time` | day fraction + `hh:mm:ss`, **whole seconds** | Date & Time on **12/30/1899** in Tableau (no time-only type) |
 | `BINARY` | `bytes` | hex text | String |
-| `VARIANT` / `OBJECT` / `ARRAY` | JSON `str` | text | String |
+| `VARIANT` / `OBJECT` / `ARRAY` | JSON `str` | text, multi-line ([details](#json-columns-variant-object-array)) | String |
 | `NULL` | `None` | empty cell | null |
 
 ## What every published tab guarantees
@@ -36,8 +36,23 @@ Sheets stores dates as **serial numbers**: days since 1899-12-30, with the time 
 
 Timestamps with a time zone are converted to UTC, because Sheets cells have no time zone.
 
+**Timestamps and times are truncated to whole seconds.** Sheets displays whole seconds and *rounds* the display, so `23:59:59.999999` looks like the next day's `00:00:00`. Worse, Tableau Public read that value as **Null**; this was found live. Truncating, never rounding, can't cross a day boundary. If you need sub-second precision, select it as a separate column in SQL, such as `DATE_PART(epoch_millisecond, ts)`.
+
 !!! success "Verified in Tableau Public"
-    `projects/tpch_sample` was connected in Tableau Public Desktop through the Google Drive connector. Every column arrived with the expected type: dates as Date, `COMPUTED_AT` and `refreshed_at_utc` as Date & Time shown in UTC (no time zone shift), booleans as Boolean, numbers as Number, text as String. Row counts matched Snowflake. **Power BI hasn't been checked.** If a field arrives as String in either tool, change its type once.
+    `projects/tpch_sample` and a throwaway type test were connected in Tableau Public Desktop through the Google Drive connector. Each column was checked in the data source preview:
+
+    | Snowflake | Tableau Public showed |
+    |---|---|
+    | `DATE` | Date |
+    | `TIMESTAMP_NTZ`, `TIMESTAMP_TZ`, `TIMESTAMP_LTZ` | Date & Time, in UTC (no time zone shift) |
+    | `TIME` | Date & Time on **12/30/1899**: Tableau has no time-only type, so use the time part |
+    | `BOOLEAN` | Boolean |
+    | integers, including 9,007,199,254,740,992 | Number, exact |
+    | decimals and `FLOAT` | Number (the data preview shows two decimals by default) |
+    | NaN, ±Infinity, `NULL` | Null |
+    | `VARCHAR`, `BINARY`, `VARIANT` | not checked in Tableau |
+
+    Row counts matched Snowflake. **Power BI hasn't been checked.** If a field arrives as String, change its type once.
 
 ## How Tableau reads the Sheet
 
@@ -67,7 +82,13 @@ Cast the column to text in SQL, e.g. ORDER_ID::VARCHAR AS ORDER_ID
 
 `NUMBER(38,0)` (Snowflake's default integer type) means *up to* 38 digits, not that every value has 38. The check looks at **actual values**, so ordinary counts and most IDs pass. Large IDs are identifiers rather than quantities anyway, so text is the right type for them in a dashboard.
 
+Sheets itself displays a large exact integer in scientific notation (`9.0072E+15`), but the stored value is exact, and Tableau Public showed `9,007,199,254,740,992`.
+
 **Decimals:** non-integer `NUMBER(p,s)` values become floats, which keep about 15–17 significant digits. That isn't checked, since it's normal for analytics. If you need every digit, cast to `VARCHAR` in SQL.
+
+## JSON columns (`VARIANT`, `OBJECT`, `ARRAY`)
+
+These arrive as **text**, pretty-printed over several lines. An `ARRAY` containing a NULL prints that element as `undefined` (a Snowflake quirk), which isn't valid JSON. Wrap the column in `TO_JSON(...)` in your SQL for compact, valid, single-line JSON.
 
 ## Long text
 

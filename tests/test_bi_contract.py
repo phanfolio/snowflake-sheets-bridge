@@ -68,6 +68,17 @@ def test_text_is_truncated_to_the_sheets_cell_limit(fake_sheets):
     assert len(cell_value(fake_sheets.read_grid("t")[1][0])) == 50_000
 
 
+def test_sub_second_values_never_round_across_midnight(fake_sheets):
+    # Found live in Tableau Public: 2000-02-29 23:59:59.999999 was read as Null, because the stored
+    # day fraction rounds up to the next day. Whole-second truncation keeps it on the same day.
+    near_midnight = normalize(datetime(2000, 2, 29, 23, 59, 59, 999_999))
+    publish(fake_sheets, [("t", Table(["TS"], [[near_midnight]]))])
+
+    value = cell_value(fake_sheets.read_grid("t")[1][0])
+    assert value == pytest.approx(36585 + 86_399 / 86_400, abs=1e-12)
+    assert int(value) == 36585, "still on 2000-02-29"
+
+
 def test_realistic_table_is_bi_ready(fake_sheets):
     header = ["ORDER_DATE", "REGION", "REVENUE", "ORDERS", "IS_PROMO", "UPDATED_AT", "NOTE"]
     raw_rows = [

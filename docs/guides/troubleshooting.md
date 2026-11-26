@@ -57,6 +57,16 @@ Connecting Tableau Public to the Sheet uses its **Google Drive** connector ([Set
 
 The service account that publishes the data isn't involved: Tableau reads the Sheet with *your* Google sign-in.
 
+## Tableau Public publishing
+
+| Symptom | Cause → fix |
+|---|---|
+| **Keep my data in sync…** is greyed out, with "Not all data sources … have saved credentials" | Tableau Public has no saved Google credential. Add a **Google Drive** credential in your Tableau Public settings on the website, then save again |
+| The sync option doesn't appear when you re-publish | It's only offered under **File → Save to Tableau Public As…**. To add sync to a workbook you already published, save it again with *Save As…*; delete the old copy from your profile if a duplicate appears |
+| "Unable to complete action … Row count mismatch in HyperBinaryDataInserter … Unable to create extract" when leaving the data source page | Seen when one data source held several tabs, shown under *Disconnected Tables*. The cause isn't confirmed. Connect each tab as its own data source (Data → New Data Source → Google Drive → drag in one table) |
+| A text sheet shows `######` | The value doesn't fit the cell, and the tooltip still shows it. Set the toolbar's fit to **Entire View** |
+| A timestamp reads **Null** in Tableau | Older Snowsheets versions wrote sub-second timestamps, and one just before midnight rounded across the day boundary. Current versions truncate to whole seconds: re-run the sync |
+
 ## Getting more detail
 
 For anything else, re-run once with `VERBOSE_ERRORS=1` set as a repository or environment variable, and read the traceback.
