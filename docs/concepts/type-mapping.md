@@ -36,8 +36,16 @@ Sheets stores dates as **serial numbers**: days since 1899-12-30, with the time 
 
 Timestamps with a time zone are converted to UTC, because Sheets cells have no time zone.
 
-!!! note "Unverified in the real tools"
-    The "BI tools should see" column is what these cell types and formats *should* produce. It hasn't been checked against a live Tableau Public or Power BI connection. If a field arrives as String, change its type once in the tool.
+!!! success "Verified in Tableau Public"
+    `projects/tpch_sample` was connected in Tableau Public Desktop through the Google Drive connector. Every column arrived with the expected type: dates as Date, `COMPUTED_AT` and `refreshed_at_utc` as Date & Time shown in UTC (no time zone shift), booleans as Boolean, numbers as Number, text as String. Row counts matched Snowflake. **Power BI hasn't been checked.** If a field arrives as String in either tool, change its type once.
+
+## How Tableau reads the Sheet
+
+Tableau's Google Drive connector lists the connection as **Microsoft Excel (Google Drive)**: it downloads an **Excel export** of the Sheet, not the Sheets API's cell types. Three consequences:
+
+- Types come from the export's **number formats**, which is why the per-column date formats matter.
+- Google's Drive API limits exported files to roughly 10 MB. That limit hasn't been tested here, so keep large projects aggregated.
+- Tableau shows friendlier field names (`ORDER_DATE` appears as "Order Date", with the original under **Remote Field**) and may assign geographic roles to columns such as country names. The `columns:` schema lock still checks the original names.
 
 ## Precision
 

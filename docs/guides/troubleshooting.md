@@ -44,6 +44,19 @@ Messages name datasets, columns and row numbers but **never values**, because lo
 | `over Google Sheets' 10,000,000-cell limit` | Too much data in one spreadsheet. Aggregate, lower `max_rows`, or split into two projects |
 | `uv sync --locked` fails | `uv.lock` is missing or out of date: run `uv lock` and commit it |
 
+## Tableau Public sign-in
+
+Connecting Tableau Public to the Sheet uses its **Google Drive** connector ([Setup → Tableau Public](../getting-started/setup.md#tableau-public-once-per-project)). Sign-in problems come from Google or the browser, not from Snowsheets. Try these in order:
+
+| Symptom | Cause → fix |
+|---|---|
+| Sign-in opens in the wrong browser | Tableau opens your **system default browser**. Copy the URL into the browser where you're signed in to the right Google account, or temporarily change the default (macOS: System Settings → Desktop & Dock → Default web browser) and click the connector again |
+| Signed in, but the file list is empty or shows "Google Drive has rejected this request because of insufficient permissions" | The token Tableau holds lacks Drive access, usually because a permission box on Google's consent page was left unticked. In Tableau's dialog click **sign out**, sign in again and **tick every box**. If it persists, remove Tableau at [myaccount.google.com/permissions](https://myaccount.google.com/permissions) and sign in again, so Tableau gets a fresh token |
+| The same error on a Google Workspace account | The domain may restrict Drive for third-party apps. In the Admin console: Security → Access and data control → API controls → Google services. If Google Drive is **Restricted**, make it Unrestricted or add Tableau as a trusted app |
+| Signed in, but the Sheet isn't listed | Wrong Google account. Sign in as the Sheet's owner, or an account it's shared with, and look under **Shared with me** |
+
+The service account that publishes the data isn't involved: Tableau reads the Sheet with *your* Google sign-in.
+
 ## Getting more detail
 
 For anything else, re-run once with `VERBOSE_ERRORS=1` set as a repository or environment variable, and read the traceback.
