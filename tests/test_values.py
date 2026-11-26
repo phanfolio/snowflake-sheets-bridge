@@ -45,6 +45,21 @@ def test_aware_timestamps_convert_to_naive_utc():
     assert normalize(aware).tzinfo is None
 
 
+@pytest.mark.parametrize("raw, expected", [
+    (datetime(2000, 2, 29, 23, 59, 59, 999_999), datetime(2000, 2, 29, 23, 59, 59)),   # was Null in Tableau
+    (datetime(2026, 3, 14, 9, 26, 53, 589_000), datetime(2026, 3, 14, 9, 26, 53)),     # truncated, not rounded to :54
+    (datetime(2026, 1, 1, 12, 0, 0, 1), datetime(2026, 1, 1, 12, 0, 0)),
+    (time(23, 59, 59, 123_456), time(23, 59, 59)),
+])
+def test_sub_second_precision_is_truncated(raw, expected):
+    assert normalize(raw) == expected
+
+
+def test_aware_timestamps_are_truncated_after_conversion_to_utc():
+    aware = datetime(2026, 1, 1, 23, 59, 59, 999_999, tzinfo=timezone(timedelta(hours=-6)))
+    assert normalize(aware) == datetime(2026, 1, 2, 5, 59, 59)
+
+
 def test_time_drops_timezone():
     assert normalize(time(9, tzinfo=timezone.utc)).tzinfo is None
 

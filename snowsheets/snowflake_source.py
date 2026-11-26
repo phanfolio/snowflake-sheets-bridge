@@ -66,11 +66,13 @@ def normalize(value: object) -> Value:
     if isinstance(value, datetime):                  # before `date`: datetime subclasses date
         if value.tzinfo is not None:                 # TIMESTAMP_TZ / _LTZ -> UTC; Sheets has no time zones
             value = value.astimezone(timezone.utc).replace(tzinfo=None)
-        return value
+        # Whole seconds only. Found live: Tableau read 23:59:59.999999 as Null, because the stored
+        # day fraction rounds up to the next day. Truncating can never cross a day boundary.
+        return value.replace(microsecond=0)
     if isinstance(value, date):
         return value
     if isinstance(value, time):
-        return value.replace(tzinfo=None)
+        return value.replace(tzinfo=None, microsecond=0)
     if isinstance(value, (bytes, bytearray)):        # BINARY
         return value.hex()[:MAX_CELL_CHARS]
     return str(value)[:MAX_CELL_CHARS]               # anything else, e.g. unparsed VARIANT

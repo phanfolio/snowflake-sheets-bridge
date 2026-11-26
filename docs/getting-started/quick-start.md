@@ -18,7 +18,7 @@ Using a project called `marketing` as the example:
 4. **Caller workflow.** Copy `.github/workflows/sync-tpch_sample.yml` to `sync-marketing.yml` and replace every `tpch_sample` with `marketing`. Use a different cron minute.
 5. **Environment.** In GitHub → Settings → Environments, create `marketing` and limit it to the `main` branch. Add the secrets `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PRIVATE_KEY`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_ROLE` and `GOOGLE_SHEET_ID`.
 6. **First run.** Push, then in Actions → *Sync: marketing* → **Run workflow**. Check the Sheet.
-7. **Tableau Public.** Connect Tableau Public Desktop to the Sheet with the **Google Drive** connector, and publish with **Keep my data in sync…** ticked ([details](setup.md#tableau-public-once-per-project)).
+7. **Tableau Public.** Connect Tableau Public Desktop to the Sheet with the **Google Drive** connector, and publish (File → Save to Tableau Public As…) with **Keep my data in sync with the data source using saved credentials** ticked ([details](setup.md#tableau-public-once-per-project)).
 
 !!! warning "Names must match"
     The folder name, the GitHub Environment name and the `project:` value in the caller must all be the same. See [Workflows → Why the names must match](../reference/workflows.md#why-the-names-must-match).

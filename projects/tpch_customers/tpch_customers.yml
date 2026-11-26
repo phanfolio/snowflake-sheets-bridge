@@ -1,0 +1,11 @@
+# Second example project: its own Snowflake query, its own Google Sheet and its own GitHub
+# Environment. Exists to show that projects are isolated: if this one breaks (expired trial,
+# revoked key), tpch_sample keeps running. Same sample data as tpch_sample
+# (SNOWFLAKE_SAMPLE_DATA.TPCH_SF1), so it needs no extra Snowflake grants.
+# Validate:  uv run snowsheets check projects/tpch_customers
+
+datasets:
+  # 125 rows: integer counts and decimal balances
+  - name: customers_by_nation
+    sql: queries/customers_by_nation.sql
+    columns: [NATION, MARKET_SEGMENT, CUSTOMERS, TOTAL_BALANCE, AVG_BALANCE]
